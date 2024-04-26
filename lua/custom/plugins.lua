@@ -1,4 +1,4 @@
-local overrides = require("custom.configs.overrides")
+local overrides = require "custom.configs.overrides"
 
 ---@type NvPluginSpec[]
 local plugins = {
@@ -9,8 +9,8 @@ local plugins = {
     "neovim/nvim-lspconfig",
     opts = {
       inlay_hints = {
-        enabled = true
-      }
+        enabled = true,
+      },
     },
     config = function()
       require "plugins.configs.lspconfig"
@@ -21,7 +21,7 @@ local plugins = {
   -- override plugin configs
   {
     "williamboman/mason.nvim",
-    opts = overrides.mason
+    opts = overrides.mason,
   },
 
   {
@@ -65,15 +65,32 @@ local plugins = {
   {
     "rust-lang/rust.vim",
     ft = "rust",
-    init = function ()
+    init = function()
       vim.g.rustfmt_autosave = 1
-    end
+    end,
   },
   {
     "olrtg/nvim-emmet",
     config = function()
-      vim.keymap.set({ "n", "v" }, '<leader>ll', require('nvim-emmet').wrap_with_abbreviation)
+      vim.keymap.set({ "n", "v" }, "<leader>ll", require("nvim-emmet").wrap_with_abbreviation)
     end,
+  },
+  {
+    "mg979/vim-visual-multi",
+  },
+  {
+    "jose-elias-alvarez/null-ls.nvim",
+  },
+  {
+    "MunifTanjim/eslint.nvim",
+  },
+  {
+    "pmizio/typescript-tools.nvim",
+    dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
+    opts = {},
+  },
+  {
+    "MunifTanjim/prettier.nvim",
   },
   -- To make a plugin not be loaded
   -- {
