@@ -30,9 +30,17 @@ M.mason = {
     -- web dev stuff
     "css-lsp",
     "html-lsp",
+    "css-variables-language-server",
     "typescript-language-server",
     "deno",
     "prettier",
+    "emmet-language-server",
+    "emmet-ls",
+    "prettier",
+    "rstcheck",
+    "rust-analyzer",
+    "stylua",
+    "tailwindcss-language-server",
 
     -- c/cpp stuff
     "clangd",
