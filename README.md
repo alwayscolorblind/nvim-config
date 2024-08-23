@@ -7,26 +7,7 @@ NeoVim config based on NvChad for JavaScript/TypeScript and Rust development.
 - Clone repo
 - Install configs using linux `cp` command
   ```cp -rf /dist/to/nvim-config ~/.config/nvim```
-- Install Mason dependencies:
-  ```
-  clang-format
-  clangd
-  css-lsp
-  css-variables-language-server
-  deno
-  emmet-language-server
-  emmt-ls
-  eslint-lsp
-  html-lsp
-  lua-language-server
-  prettier
-  rstcheck
-  rust-analyzer
-  stylua
-  tailwindcss-language-server
-  typescript-language-server
-  ```
-  - Run `:MasonInstallAll`
-  - Enjoy!!!
+- Run `:MasonInstallAll`
+- Enjoy!!!
 ### TODO
 - Make migration to v2.5 NvChad
