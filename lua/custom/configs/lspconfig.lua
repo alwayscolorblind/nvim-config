@@ -1,14 +1,8 @@
 local on_attach = require("plugins.configs.lspconfig").on_attach
 local capabilities = require("plugins.configs.lspconfig").capabilities
 local lspconfig = require "lspconfig"
-local util = require "lspconfig/util"
 -- if you just want default config for the servers then put them in a table
 local servers = { "html", "cssls", "clangd", "gopls", "eslint" }
-
--- local eslint = require "eslint"
--- local null_ls = require "null-ls"
---
--- local prettier = require "prettier"
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
@@ -17,14 +11,47 @@ for _, lsp in ipairs(servers) do
   }
 end
 
+local ts_diagnostic_ignore_codes = { 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013, 8014, 8015, 8016, 8017 }
+
+local function has_value(tab, val)
+  for _, value in ipairs(tab) do
+    if value == val then
+      return true
+    end
+  end
+
+  return false
+end
+
+-- works bad :(
+lspconfig.flow.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+}
+
 require("typescript-tools").setup {
   on_attach = on_attach,
   capabilities = capabilities,
+  handlers = {
+    ['textDocument/publishDiagnostics'] = function(_1, params, client_id, _2, config)
+      if params.diagnostics ~= nil then
+        local idx = 1
+        while idx <= #params.diagnostics do
+          if has_value(ts_diagnostic_ignore_codes, params.diagnostics[idx].code) then
+            table.remove(params.diagnostics, idx)
+          else
+            idx = idx + 1
+          end
+        end
+      end
+      vim.lsp.diagnostic.on_publish_diagnostics(_1, params, client_id, _2, config)
+    end
+  },
   settings = {
     -- spawn additional tsserver instance to calculate diagnostics on it
-    separate_diagnostic_server = false,
+    separate_diagnostic_server = true,
     -- "change"|"insert_leave" determine when the client asks the server about diagnostic
-    publish_diagnostic_on = "change",
+    publish_diagnostic_on = "insert_leave",
     -- array of strings("fix_all"|"add_missing_imports"|"remove_unused"|
     -- "remove_unused_imports"|"organize_imports") -- or string "all"
     -- to include all supported code actions
@@ -39,36 +66,15 @@ require("typescript-tools").setup {
     -- this value is passed to: https://nodejs.org/api/cli.html#--max-old-space-sizesize-in-megabytes
     -- memory limit in megabytes or "auto"(basically no limit)
     tsserver_max_memory = "auto",
-
-    inlayHints = {
-      includeInlayParameterNameHints = "all",
-      includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-      includeInlayFunctionParameterTypeHints = true,
-      includeInlayVariableTypeHints = true,
-      includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-      includeInlayPropertyDeclarationTypeHints = true,
-      includeInlayFunctionLikeReturnTypeHints = true,
-      includeInlayEnumMemberValueHints = true,
-    },
-
     -- described below
     tsserver_format_options = {
       insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = true,
       insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = true,
       insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = true,
-      semicolons = "insert",
     },
     tsserver_file_preferences = {
-      quotePreference = "single",
-      disableSuggestions = true,
-      includeInlayParameterNameHints = 'literals',
-      includeInlayParameterNameHintsWhenArgumentMatchesName = true,
-      includeInlayFunctionParameterTypeHints = true,
-      includeInlayVariableTypeHints = true,
-      includeInlayVariableTypeHintsWhenTypeMatchesName = true,
-      includeInlayPropertyDeclarationTypeHints = true,
-      includeInlayFunctionLikeReturnTypeHints = true,
-      includeInlayEnumMemberValueHints = true,
+      quotePreference = "double",
+      jsxAttributeCompletionStyle = "none",
     },
     -- locale of all tsserver messages, supported locales you can find here:
     -- https://github.com/microsoft/TypeScript/blob/3c221fc086be52b19801f6e8d82596d04607ede6/src/compiler/utilitiesPublic.ts#L620
@@ -79,7 +85,7 @@ require("typescript-tools").setup {
     -- CodeLens
     -- WARNING: Experimental feature also in VSCode, because it might hit performance of server.
     -- possible values: ("off"|"all"|"implementations_only"|"references_only")
-    code_lens = "implementations_only",
+    code_lens = "off",
     -- by default code lenses are displayed on all referencable values and for some of you it can
     -- be too much this option reduce count of them by removing member references from lenses
     disable_member_code_lens = true,
@@ -90,6 +96,28 @@ require("typescript-tools").setup {
       enable = true,
       filetypes = { "javascriptreact", "typescriptreact" },
     },
+  },
+}
+
+require("eslint").setup {
+  bin = "eslint", -- or `eslint_d`
+  on_attach = on_attach,
+  capabilities = capabilities,
+  code_actions = {
+    enable = true,
+    apply_on_save = {
+      enable = true,
+      types = { "directive", "problem", "suggestion", "layout" },
+    },
+    disable_rule_comment = {
+      enable = true,
+      location = "separate_line", -- or `same_line`
+    },
+  },
+  diagnostics = {
+    enable = true,
+    report_unused_disable_directives = false,
+    run_on = "type", -- or `save`
   },
 }
 
@@ -105,66 +133,63 @@ lspconfig.emmet_ls.setup {
   },
 }
 
-lspconfig.gopls.setup {
-  on_attach = on_attach,
-  capabilities = capabilities,
-  settings = {
-    gopls = {
-      analyses = {
-        unusedparams = true,
+local format_on_save = require "format-on-save"
+local formatters = require "format-on-save.formatters"
+
+format_on_save.setup {
+  exclude_path_patterns = {
+    "/node_modules/",
+    ".local/share/nvim/lazy",
+  },
+  formatter_by_ft = {
+    css = formatters.lsp,
+    html = formatters.lsp,
+    java = formatters.lsp,
+    json = formatters.lsp,
+    lua = formatters.lsp,
+    markdown = formatters.prettier,
+    openscad = formatters.lsp,
+    scad = formatters.lsp,
+    scss = formatters.lsp,
+    sh = formatters.shfmt,
+    terraform = formatters.lsp,
+    typescriptreact = formatters.prettierd,
+    yaml = formatters.lsp,
+    -- Add conditional formatter that only runs if a certain file exists
+    -- in one of the parent directories.
+    javascript = {
+      formatters.if_file_exists {
+        pattern = ".eslintrc.*",
+        formatter = formatters.eslint_fix,
+      },
+      formatters.if_file_exists {
+        pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
+        formatter = formatters.prettier,
+      },
+    },
+    typescript = {
+      formatters.if_file_exists {
+        pattern = ".eslintrc.*",
+        formatter = formatters.eslint_fix,
+      },
+      formatters.if_file_exists {
+        pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
+        formatter = formatters.prettier,
       },
     },
   },
-}
 
--- lspconfig.tsserver.setup {
---   on_attach = on_attach,
---   capabilities = capabilities,
---   init_options = {
---     preferences = {
---       disableSuggestions = true,
---     },
---   },
---   settings = {
---     typescript = {
---       inlayHints = {
---         includeInlayParameterNameHints = "all",
---         includeInlayParameterNameHintsWhenArgumentMatchesName = true,
---         includeInlayFunctionParameterTypeHints = true,
---         includeInlayVariableTypeHints = true,
---         includeInlayVariableTypeHintsWhenTypeMatchesName = true,
---         includeInlayPropertyDeclarationTypeHints = true,
---         includeInlayFunctionLikeReturnTypeHints = true,
---         includeInlayEnumMemberValueHints = true,
---       },
---       format = {
---         insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces = true,
---         insertSpaceAfterOpeningAndBeforeClosingNonemptyBrackets = true,
---         insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis = true,
---         semicolons = "insert",
---       },
---       implementationsCodeLens = {
---         enabled = true,
---       },
---       referencesCodeLens = {
---         enabled = true,
---         showOnAllFunctions = true,
---       },
---     },
---     javascript = {
---       inlayHints = {
---         includeInlayParameterNameHints = "all",
---         includeInlayParameterNameHintsWhenArgumentMatchesName = false,
---         includeInlayFunctionParameterTypeHints = true,
---         includeInlayVariableTypeHints = true,
---         includeInlayVariableTypeHintsWhenTypeMatchesName = false,
---         includeInlayPropertyDeclarationTypeHints = true,
---         includeInlayFunctionLikeReturnTypeHints = true,
---         includeInlayEnumMemberValueHints = true,
---       },
---     },
---   },
--- }
+  -- Optional: fallback formatter to use when no formatters match the current filetype
+  fallback_formatter = {
+    formatters.remove_trailing_whitespace,
+    formatters.remove_trailing_newlines,
+    formatters.prettier,
+  },
+
+  -- By default, all shell commands are prefixed with "sh -c" (see PR #3)
+  -- To prevent that set `run_with_sh` to `false`.
+  run_with_sh = true,
+}
 
 -- rustaceanvim
 vim.g.rustaceanvim = {
@@ -176,6 +201,3 @@ vim.g.rustaceanvim = {
     ["rust-analyzer"] = {},
   },
 }
-
---
--- lspconfig.pyright.setup { blabla}
