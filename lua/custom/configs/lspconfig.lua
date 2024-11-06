@@ -115,7 +115,7 @@ require("eslint").setup {
     },
   },
   diagnostics = {
-    enable = true,
+    enable = false,
     report_unused_disable_directives = false,
     run_on = "type", -- or `save`
   },
@@ -135,6 +135,7 @@ lspconfig.emmet_ls.setup {
 
 local format_on_save = require "format-on-save"
 local formatters = require "format-on-save.formatters"
+local vim_notify = require("format-on-save.error-notifiers.vim-notify")
 
 format_on_save.setup {
   exclude_path_patterns = {
@@ -164,7 +165,7 @@ format_on_save.setup {
       },
       formatters.if_file_exists {
         pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
-        formatter = formatters.prettier,
+        formatter = formatters.prettierd,
       },
     },
     typescript = {
@@ -174,17 +175,17 @@ format_on_save.setup {
       },
       formatters.if_file_exists {
         pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
-        formatter = formatters.prettier,
+        formatter = formatters.prettierd,
       },
     },
   },
 
   -- Optional: fallback formatter to use when no formatters match the current filetype
-  fallback_formatter = {
-    formatters.remove_trailing_whitespace,
-    formatters.remove_trailing_newlines,
-    formatters.prettier,
-  },
+  -- fallback_formatter = {
+  --   formatters.remove_trailing_whitespace,
+  --   formatters.remove_trailing_newlines,
+  --   formatters.prettierd,
+  -- },
 
   -- By default, all shell commands are prefixed with "sh -c" (see PR #3)
   -- To prevent that set `run_with_sh` to `false`.
@@ -201,3 +202,81 @@ vim.g.rustaceanvim = {
     ["rust-analyzer"] = {},
   },
 }
+
+-- default configuration
+require('illuminate').configure({
+  -- providers: provider used to get references in the buffer, ordered by priority
+  providers = {
+    'lsp',
+    'treesitter',
+    'regex',
+  },
+  -- delay: delay in milliseconds
+  delay = 100,
+  -- filetype_overrides: filetype specific overrides.
+  -- The keys are strings to represent the filetype while the values are tables that
+  -- supports the same keys passed to .configure except for filetypes_denylist and filetypes_allowlist
+  filetype_overrides = {},
+  -- filetypes_denylist: filetypes to not illuminate, this overrides filetypes_allowlist
+  filetypes_denylist = {
+    'dirbuf',
+    'dirvish',
+    'fugitive',
+  },
+  -- filetypes_allowlist: filetypes to illuminate, this is overridden by filetypes_denylist
+  -- You must set filetypes_denylist = {} to override the defaults to allow filetypes_allowlist to take effect
+  filetypes_allowlist = {},
+  -- modes_denylist: modes to not illuminate, this overrides modes_allowlist
+  -- See `:help mode()` for possible values
+  modes_denylist = {},
+  -- modes_allowlist: modes to illuminate, this is overridden by modes_denylist
+  -- See `:help mode()` for possible values
+  modes_allowlist = {},
+  -- providers_regex_syntax_denylist: syntax to not illuminate, this overrides providers_regex_syntax_allowlist
+  -- Only applies to the 'regex' provider
+  -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+  providers_regex_syntax_denylist = {},
+  -- providers_regex_syntax_allowlist: syntax to illuminate, this is overridden by providers_regex_syntax_denylist
+  -- Only applies to the 'regex' provider
+  -- Use :echom synIDattr(synIDtrans(synID(line('.'), col('.'), 1)), 'name')
+  providers_regex_syntax_allowlist = {},
+  -- under_cursor: whether or not to illuminate under the cursor
+  under_cursor = true,
+  -- large_file_cutoff: number of lines at which to use large_file_config
+  -- The `under_cursor` option is disabled when this cutoff is hit
+  large_file_cutoff = nil,
+  -- large_file_config: config to use for large files (based on large_file_cutoff).
+  -- Supports the same keys passed to .configure
+  -- If nil, vim-illuminate will be disabled for large files.
+  large_file_overrides = nil,
+  -- min_count_to_highlight: minimum number of matches required to perform highlighting
+  min_count_to_highlight = 2,
+  -- should_enable: a callback that overrides all other settings to
+  -- enable/disable illumination. This will be called a lot so don't do
+  -- anything expensive in it.
+  should_enable = function(bufnr) return true end,
+  -- case_insensitive_regex: sets regex case sensitivity
+  case_insensitive_regex = false,
+})
+
+local npairs = require("nvim-autopairs")
+local Rule = require('nvim-autopairs.rule')
+local cond = require('nvim-autopairs.conds')
+
+-- Setup nvim-autopairs with default configuration
+npairs.setup({
+  check_ts = true, -- Enable treesitter support for more precision
+})
+
+npairs.add_rule(Rule('<', '>', {
+  -- if you use nvim-ts-autotag, you may want to exclude these filetypes from this rule
+  -- so that it doesn't conflict with nvim-ts-autotag
+}):with_pair(
+-- regex will make it so that it will auto-pair on
+-- `a<` but not `a <`
+-- The `:?:?` part makes it also
+-- work on Rust generics like `some_func::<T>()`
+  cond.before_regex('%a+:?:?$', 3)
+):with_move(function(opts)
+  return opts.char == '>'
+end))
