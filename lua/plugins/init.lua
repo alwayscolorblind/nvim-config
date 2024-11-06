@@ -140,20 +140,38 @@ local default_plugins = {
       },
 
       -- autopairing of (){}[] etc
-      -- {
-      --   "windwp/nvim-autopairs",
-      --   opts = {
-      --     fast_wrap = {},
-      --     disable_filetype = { "TelescopePrompt", "vim" },
-      --   },
-      -- config = function(_, opts)
-      --   require("nvim-autopairs").setup(opts)
-      --
-      --   -- setup cmp for autopairs
-      --   local cmp_autopairs = require "nvim-autopairs.completion.cmp"
-      --   require("cmp").event:on("confirm_done", cmp_autopairs.on_confirm_done())
-      -- end,
-      -- },
+      {
+        "windwp/nvim-autopairs",
+        opts = {
+          fast_wrap = {},
+          disable_filetype = { "TelescopePrompt", "vim" },
+          enable_check_bracket_line = false
+        },
+        config = function(_, opts)
+          require("nvim-autopairs").setup(opts)
+
+          -- Setup cmp for autopairs
+          local cmp_autopairs = require("nvim-autopairs.completion.cmp")
+          local cmp = require("cmp")
+
+          -- Modify the behavior of on_confirm_done to skip parentheses for proc macros
+          cmp.event:on("confirm_done", function(event)
+            local entry = event.entry
+            local item = entry:get_completion_item()
+
+            -- Check if we're in a proc-macro context
+            -- Look for `#` starting for a proc-macro (simpler for demonstration)
+            local line = vim.api.nvim_get_current_line()
+            if line:match("^%s*#") then
+              -- Skip autopairing if it's a procedural macro
+              return
+            end
+
+            -- Otherwise, proceed with regular autopairing behavior
+            cmp_autopairs.on_confirm_done()(event)
+          end)
+        end,
+      },
 
       -- cmp sources plugins
       {
@@ -175,12 +193,12 @@ local default_plugins = {
   {
     "numToStr/Comment.nvim",
     keys = {
-      { "gcc", mode = "n", desc = "Comment toggle current line" },
-      { "gc", mode = { "n", "o" }, desc = "Comment toggle linewise" },
-      { "gc", mode = "x", desc = "Comment toggle linewise (visual)" },
-      { "gbc", mode = "n", desc = "Comment toggle current block" },
-      { "gb", mode = { "n", "o" }, desc = "Comment toggle blockwise" },
-      { "gb", mode = "x", desc = "Comment toggle blockwise (visual)" },
+      { "gcc", mode = "n",          desc = "Comment toggle current line" },
+      { "gc",  mode = { "n", "o" }, desc = "Comment toggle linewise" },
+      { "gc",  mode = "x",          desc = "Comment toggle linewise (visual)" },
+      { "gbc", mode = "n",          desc = "Comment toggle current block" },
+      { "gb",  mode = { "n", "o" }, desc = "Comment toggle blockwise" },
+      { "gb",  mode = "x",          desc = "Comment toggle blockwise (visual)" },
     },
     init = function()
       require("core.utils").load_mappings "comment"
