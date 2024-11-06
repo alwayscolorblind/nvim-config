@@ -11,13 +11,11 @@ M.general = {
         require("conform").format()
       end,
       "formatting",
-    },
+    }
 
-    -- gitsigns
-    ["<leader>gh"] = { "<cmd> Gitsigns preview_hunk <CR>", "Preview hunk" }
   },
   v = {
-    [">"] = { ">gv", "indent" },
+    [">"] = { ">gv", "indent"},
   },
 }
 

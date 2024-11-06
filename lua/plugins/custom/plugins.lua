@@ -92,8 +92,6 @@ local plugins = {
   {
     "MunifTanjim/prettier.nvim",
   },
-  { "elentok/format-on-save.nvim" },
-  { "RRethy/vim-illuminate" }
   -- To make a plugin not be loaded
   -- {
   --   "NvChad/nvim-colorizer.lua",
