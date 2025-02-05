@@ -34,6 +34,8 @@ local plugins = {
     opts = overrides.nvimtree,
   },
 
+  { "alwayscolorblind/gruvbox.nvim", priority = 1000, config = true, },
+
   -- Install a plugin
   {
     "max397574/better-escape.nvim",
@@ -57,12 +59,6 @@ local plugins = {
     ft = { "rust" },
   },
   {
-    "lvimuser/lsp-inlayhints.nvim",
-    config = function()
-      require("lsp-inlayhints").setup()
-    end,
-  },
-  {
     "rust-lang/rust.vim",
     ft = "rust",
     init = function()
@@ -82,9 +78,6 @@ local plugins = {
     "jose-elias-alvarez/null-ls.nvim",
   },
   {
-    "MunifTanjim/eslint.nvim",
-  },
-  {
     "pmizio/typescript-tools.nvim",
     dependencies = { "nvim-lua/plenary.nvim", "neovim/nvim-lspconfig" },
     opts = {},
@@ -93,7 +86,8 @@ local plugins = {
     "MunifTanjim/prettier.nvim",
   },
   { "elentok/format-on-save.nvim" },
-  { "RRethy/vim-illuminate" }
+  { "RRethy/vim-illuminate" },
+  { "nvim-pack/nvim-spectre" },
   -- To make a plugin not be loaded
   -- {
   --   "NvChad/nvim-colorizer.lua",

@@ -1,15 +1,12 @@
-dofile(vim.g.base46_cache .. "lsp")
+-- dofile(vim.g.base46_cache .. "lsp")
 require "nvchad.lsp"
 
 local M = {}
 local utils = require "core.utils"
-local ih = require "lsp-inlayhints"
-ih.setup()
 -- export on_attach & capabilities for custom lspconfigs
 
 M.on_attach = function(client, bufnr)
   utils.load_mappings("lspconfig", { buffer = bufnr })
-  ih.on_attach(client, bufnr)
 
   if client.server_capabilities.signatureHelpProvider then
     require("nvchad.signature").setup(client)

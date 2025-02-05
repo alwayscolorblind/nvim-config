@@ -2,7 +2,7 @@ local on_attach = require("plugins.configs.lspconfig").on_attach
 local capabilities = require("plugins.configs.lspconfig").capabilities
 local lspconfig = require "lspconfig"
 -- if you just want default config for the servers then put them in a table
-local servers = { "html", "cssls", "clangd", "gopls", "eslint" }
+local servers = { "html", "cssls", "clangd", "gopls", "eslint", "stylelint_lsp", "tailwindcss", "kotlin_language_server" }
 
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
@@ -10,6 +10,26 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
+
+lspconfig.yamlls.setup {
+  on_attach = on_attach,
+  capabilities = capabilities,
+  filetypes = { 'yaml', 'yaml.docker-compose', 'yaml.gitlab', 'yaml.helm-values', "*.docker-compose.yml" },
+  settings = {
+    yaml = {
+      ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*.docker-compose.yml",
+    }
+  }
+}
+
+lspconfig.cssmodules_ls.setup {
+  on_attach = function(client)
+    client.server_capabilities.implementationProvider = false
+    client.server_capabilities.definitionProvider = false
+    on_attach(client)
+  end,
+  capabilities = capabilities
+}
 
 local ts_diagnostic_ignore_codes = { 8002, 8003, 8004, 8005, 8006, 8007, 8008, 8009, 8010, 8011, 8012, 8013, 8014, 8015, 8016, 8017 }
 
@@ -28,6 +48,30 @@ lspconfig.flow.setup {
   on_attach = on_attach,
   capabilities = capabilities,
 }
+
+require("gruvbox").setup({
+  terminal_colors = true, -- add neovim terminal colors
+  undercurl = true,
+  underline = true,
+  bold = true,
+  italic = {
+    strings = true,
+    emphasis = true,
+    comments = true,
+    operators = false,
+    folds = true,
+  },
+  strikethrough = true,
+  invert_selection = false,
+  invert_signs = false,
+  invert_tabline = false,
+  inverse = true, -- invert background for search, diffs, statuslines and errors
+  contrast = "",  -- can be "hard", "soft" or empty string
+  palette_overrides = {},
+  overrides = {},
+  dim_inactive = false,
+  transparent_mode = false,
+})
 
 require("typescript-tools").setup {
   on_attach = on_attach,
@@ -99,28 +143,6 @@ require("typescript-tools").setup {
   },
 }
 
-require("eslint").setup {
-  bin = "eslint", -- or `eslint_d`
-  on_attach = on_attach,
-  capabilities = capabilities,
-  code_actions = {
-    enable = true,
-    apply_on_save = {
-      enable = true,
-      types = { "directive", "problem", "suggestion", "layout" },
-    },
-    disable_rule_comment = {
-      enable = true,
-      location = "separate_line", -- or `same_line`
-    },
-  },
-  diagnostics = {
-    enable = false,
-    report_unused_disable_directives = false,
-    run_on = "type", -- or `save`
-  },
-}
-
 lspconfig.emmet_ls.setup {
   on_attach = on_attach,
   capabilities = capabilities,
@@ -143,7 +165,7 @@ format_on_save.setup {
     ".local/share/nvim/lazy",
   },
   formatter_by_ft = {
-    css = formatters.lsp,
+    -- css = formatters.lsp,
     html = formatters.lsp,
     java = formatters.lsp,
     json = formatters.lsp,
@@ -154,14 +176,23 @@ format_on_save.setup {
     scss = formatters.lsp,
     sh = formatters.shfmt,
     terraform = formatters.lsp,
-    typescriptreact = formatters.prettierd,
+    typescriptreact = {
+      formatters.if_file_exists {
+        pattern = { ".eslintrc", ".eslintrc.*", "eslint.config.*" },
+        formatter = formatters.eslint_d_fix,
+      },
+      formatters.if_file_exists {
+        pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
+        formatter = formatters.prettierd,
+      },
+    },
     yaml = formatters.lsp,
     -- Add conditional formatter that only runs if a certain file exists
     -- in one of the parent directories.
     javascript = {
       formatters.if_file_exists {
-        pattern = ".eslintrc.*",
-        formatter = formatters.eslint_fix,
+        pattern = { ".eslintrc", ".eslintrc.*", "eslint.config.*" },
+        formatter = formatters.eslint_d_fix,
       },
       formatters.if_file_exists {
         pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
@@ -170,8 +201,8 @@ format_on_save.setup {
     },
     typescript = {
       formatters.if_file_exists {
-        pattern = ".eslintrc.*",
-        formatter = formatters.eslint_fix,
+        pattern = { ".eslintrc", ".eslintrc.*", "eslint.config.*" },
+        formatter = formatters.eslint_d_fix,
       },
       formatters.if_file_exists {
         pattern = { ".prettierrc", ".prettierrc.*", "prettier.config.*" },
@@ -280,3 +311,7 @@ npairs.add_rule(Rule('<', '>', {
 ):with_move(function(opts)
   return opts.char == '>'
 end))
+
+local spectre = require("spectre")
+
+spectre.setup({ is_block_ui_break = true })

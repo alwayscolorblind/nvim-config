@@ -144,6 +144,11 @@ M.lspconfig = {
       "LSP definition",
     },
 
+    ["gs"] = {
+      "<cmd> TSToolsGoToSourceDefinition<CR>",
+      "TSTools Go to source"
+    },
+
     ["K"] = {
       function()
         vim.lsp.buf.hover()
@@ -265,18 +270,68 @@ M.nvimtree = {
   },
 }
 
+local better_find_files = function(b_opts)
+  local ts = require "telescope"
+  local pickers = require "telescope.pickers"
+  local finders = require "telescope.finders"
+  local sorters = require "telescope.sorters"
+  local make_entry = require "telescope.make_entry"
+  local conf = require("telescope.config").values
+
+  local colors = function()
+    local opts = {}
+
+    pickers.new(opts, {
+      prompt_title = b_opts.title,
+      finder = finders.new_job(function(prompt)
+          if not prompt or prompt == "" then
+            return nil
+          end
+
+          if b_opts.no_ignore == true then
+            return { "fd", "-p", "-I", prompt }
+          end
+
+          return { "fd", "-p", prompt }
+        end,
+        make_entry.gen_from_file()
+      ),
+      sorter = sorters.highlighter_only(opts),
+      previewer = conf.grep_previewer(opts),
+    }):find()
+  end
+
+  -- to execute the function
+  colors()
+end
+
+local create_better_find_files = function(opts)
+  return function()
+    better_find_files(opts)
+  end
+end
+
 M.telescope = {
   plugin = true,
 
   n = {
     -- find
-    ["<leader>ff"] = { "<cmd> Telescope find_files <CR>", "Find files" },
-    ["<leader>fa"] = { "<cmd> Telescope find_files follow=true no_ignore=true hidden=true <CR>", "Find all" },
+    ["<leader>ff"] = {
+      create_better_find_files({
+        title = "Find files",
+      }),
+      "Find files"
+    },
+    ["<leader>fa"] = { create_better_find_files({
+      title = "Find All",
+      no_ignore = true
+    }), "Find all" },
     ["<leader>fw"] = { "<cmd> Telescope live_grep <CR>", "Live grep" },
     ["<leader>fb"] = { "<cmd> Telescope buffers <CR>", "Find buffers" },
     ["<leader>fh"] = { "<cmd> Telescope help_tags <CR>", "Help page" },
     ["<leader>fo"] = { "<cmd> Telescope oldfiles <CR>", "Find oldfiles" },
     ["<leader>fz"] = { "<cmd> Telescope current_buffer_fuzzy_find <CR>", "Find in current buffer" },
+    ["<leader>fq"] = { "<cmd> Telescope resume <CR>", "Resume search" },
 
     -- git
     ["<leader>cm"] = { "<cmd> Telescope git_commits <CR>", "Git commits" },

@@ -83,7 +83,7 @@ autocmd("BufWritePost", {
     local app_name = vim.env.NVIM_APPNAME and vim.env.NVIM_APPNAME or "nvim"
     local module = string.gsub(fp, "^.*/" .. app_name .. "/lua/", ""):gsub("/", ".")
 
-    require("plenary.reload").reload_module "base46"
+    -- require("plenary.reload").reload_module "base46"
     require("plenary.reload").reload_module(module)
     require("plenary.reload").reload_module "custom.chadrc"
 
@@ -102,7 +102,7 @@ autocmd("BufWritePost", {
       vim.opt.tabline = "%!v:lua.require('nvchad.tabufline.modules').run()"
     end
 
-    require("base46").load_all_highlights()
+    -- require("base46").load_all_highlights()
     -- vim.cmd("redraw!")
   end,
 })
@@ -137,5 +137,5 @@ vim.api.nvim_create_autocmd({ "UIEnter", "BufReadPost", "BufNewFile" }, {
 local new_cmd = vim.api.nvim_create_user_command
 
 new_cmd("NvChadUpdate", function()
-  require "nvchad.updater"()
+  require "nvchad.updater" ()
 end, {})
