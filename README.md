@@ -9,5 +9,10 @@ NeoVim config based on NvChad for JavaScript/TypeScript and Rust development.
   ```cp -rf /dist/to/nvim-config ~/.config/nvim```
 - Run `:MasonInstallAll`
 - Enjoy!!!
+### Known issues
+- Issue with `vscode-eslint-language-server`
+  Just install vscode-eslint-language-server using
+    - Arch: `yay -S vscode-langservers-extracted`
+    - Other: `npm i -g vscode-langservers-extracted`
 ### TODO
 - Make migration to v2.5 NvChad
