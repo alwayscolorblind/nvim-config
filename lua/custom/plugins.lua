@@ -72,9 +72,6 @@ local plugins = {
     end,
   },
   {
-    "mg979/vim-visual-multi",
-  },
-  {
     "jose-elias-alvarez/null-ls.nvim",
   },
   {

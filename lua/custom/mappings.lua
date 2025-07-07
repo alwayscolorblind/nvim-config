@@ -3,8 +3,6 @@ local M = {}
 
 M.general = {
   n = {
-    [";"] = { ":", "enter command mode", opts = { nowait = true } },
-
     --  format with conform
     ["<leader>fm"] = {
       function()
@@ -14,7 +12,7 @@ M.general = {
     },
 
     -- gitsigns
-    ["<leader>gh"] = { "<cmd> Gitsigns preview_hunk <CR>", "Preview hunk" }
+    ["<leader>gh"] = { "<cmd> Gitsigns preview_hunk <CR>", "Preview hunk" },
   },
   v = {
     [">"] = { ">gv", "indent" },
