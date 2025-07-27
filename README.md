@@ -6,7 +6,7 @@ NeoVim config based on NvChad for JavaScript/TypeScript and Rust development.
   ```git clone -b "v2.0" git@github.com:NvChad/NvChad.git ~/.config/nvim --depth 1```
 - Clone repo
 - Install configs using linux `cp` command
-  ```cp -rf /dist/to/nvim-config ~/.config/nvim```
+  ```cp -rf /dist/to/nvim-config/* ~/.config/nvim```
 - Run `:MasonInstallAll`
 - Enjoy!!!
 ### Known issues
