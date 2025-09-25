@@ -88,8 +88,11 @@ map("n", "]c", function()
   end)
   return "<Ignore>"
 end, { expr = true })
+map("n", "<leader>ca", function()
+  vim.lsp.buf.code_action()
+end)
 
 
 --fuck betterescape
-vim.keymap.del("v", "jk")
-vim.keymap.del("v", "jj")
+-- vim.keymap.del("v", "jk")
+-- vim.keymap.del("v", "jj")
