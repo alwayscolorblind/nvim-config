@@ -79,9 +79,9 @@ map("n", "]c", function()
   end)
   return "<Ignore>"
 end, { expr = true })
-map("n", "]c", function()
+map("n", "[c", function()
   if vim.wo.diff then
-    return "]c"
+    return "[c"
   end
   vim.schedule(function()
     require("gitsigns").prev_hunk()

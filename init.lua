@@ -44,4 +44,6 @@ require "configs.format-on-save"
 require "configs.spectre"
 require "configs.treesitter"
 require "configs.graphql"
+require "configs.image"
+require "configs.lspconfig"
 -- require "configs.gruvbox" broken now

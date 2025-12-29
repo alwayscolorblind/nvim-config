@@ -2,49 +2,54 @@ require("nvchad.configs.lspconfig").defaults()
 local on_attach = require("nvchad.configs.lspconfig").on_attach
 local capabilities = require("nvchad.configs.lspconfig").capabilities
 
-local servers = {
-  "html",
-  "cssls",
-  "clangd",
-  "gopls",
-  "eslint",
-  "stylelint_lsp",
-  "tailwindcss",
-  "nginx_language_server",
-  "kotlin_language_server",
-  "graphql",
-}
+-- deprecated
+-- local servers = {
+--   "html",
+--   "cssls",
+--   "clangd",
+--   "gopls",
+--   "eslint",
+--   "stylelint_lsp",
+--   "tailwindcss",
+--   "nginx_language_server",
+-- }
 
-local lspconfig = require "lspconfig"
+-- for _, lsp in ipairs(servers) do
+--   vim.lsp.config[lsp].setup {
+--     on_attach = on_attach,
+--     capabilities = capabilities,
+--   }
+-- end
+--
+vim.lsp.config("*", { capabilities = capabilities, on_attach = on_attach })
 
-for _, lsp in ipairs(servers) do
-  lspconfig[lsp].setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-  }
-end
-
-lspconfig.yamlls.setup {
-  on_attach = on_attach,
+vim.lsp.config("sqlls", {
   capabilities = capabilities,
+  on_attach = on_attach,
+  cmd = { 'sql-language-server', 'up', '--method', 'stdio' },
+  filetypes = { 'sql', 'mysql' },
+  settings = {},
+})
+
+vim.lsp.config("yamlls", {
   filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values", "*.docker-compose.yml" },
   settings = {
     yaml = {
-      ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] = "*.docker-compose.yml",
+      ["https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json"] =
+      "*.docker-compose.yml",
     },
   },
-}
+})
 
-lspconfig.cssmodules_ls.setup {
+vim.lsp.config("cssmodules_ls", {
   on_attach = function(client)
     client.server_capabilities.implementationProvider = false
     client.server_capabilities.definitionProvider = false
     on_attach(client)
   end,
-  capabilities = capabilities,
-}
+})
 
-lspconfig.emmet_ls.setup {
+vim.lsp.config("emmet_ls", {
   on_attach = on_attach,
   capabilities = capabilities,
   filetypes = {
@@ -54,4 +59,4 @@ lspconfig.emmet_ls.setup {
     "scss",
     "less",
   },
-}
+})

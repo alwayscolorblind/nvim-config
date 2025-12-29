@@ -19,9 +19,14 @@ return {
     "stylua",
     "tailwindcss-language-server",
     "stylelint-lsp",
+    "nginx-language-server",
+    "yaml-language-server",
 
     -- c/cpp stuff
     "clangd",
     "clang-format",
+
+    -- ***
+    "sqlls",
   },
 }

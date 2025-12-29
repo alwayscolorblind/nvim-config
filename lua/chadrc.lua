@@ -10,7 +10,7 @@ local M = {}
 M.base46 = {
   theme = "gruvbox",
   -- hl_override = grub.get_groups()
-  hl_override = {
+  hl_add = {
     -- TODO: rewrite from grubox
   }
 }
