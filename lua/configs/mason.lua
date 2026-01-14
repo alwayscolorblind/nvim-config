@@ -29,7 +29,7 @@ return {
 		"clang-format",
 
 		-- sql
-		"sqlls",
+		"sqls",
 
 		-- sh
 		"shfmt",

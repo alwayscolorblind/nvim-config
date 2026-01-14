@@ -169,4 +169,8 @@ return {
 		"nvim-lualine/lualine.nvim",
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 	},
+	{
+		"anuvyklack/windows.nvim",
+		dependencies = { "anuvyklack/middleclass", "anuvyklack/animation.nvim" },
+	},
 }

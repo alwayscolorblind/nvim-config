@@ -5,14 +5,23 @@ require("conform").setup({
 		javascriptreact = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
 		typescript = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
 		typescript_react = { "eslint_d", "prettierd", "prettier", stop_after_first = true },
+		rust = { "rustfmt" },
+	},
+
+	formatters = {
+		rustfmt = {
+			options = {
+				default_edition = "2024",
+			},
+		},
 	},
 
 	format_on_save = {
 		timeout_ms = 500,
-		lsp_fallback = true,
+		-- lsp_fallback = true,
 	},
 
 	default_format_opts = {
-		lsp_format = "fallback",
+		-- lsp_format = "fallback",
 	},
 })

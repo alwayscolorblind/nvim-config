@@ -9,12 +9,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
 
 vim.lsp.config("*", { capabilities = capabilities })
 
-vim.lsp.config("sqlls", {
-	cmd = { "sql-language-server", "up", "--method", "stdio" },
-	filetypes = { "sql", "mysql" },
-	settings = {},
-})
-vim.lsp.enable("sqlls")
+vim.lsp.enable("sqls")
 
 vim.lsp.config("yamlls", {
 	filetypes = { "yaml", "yaml.docker-compose", "yaml.gitlab", "yaml.helm-values", "*.docker-compose.yml" },

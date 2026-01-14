@@ -133,3 +133,13 @@ vim.keymap.set("n", "<leader>tL", term_map.move({ open_cmd = "botright vnew" }))
 vim.keymap.set("n", "<leader>th", term_map.move({ open_cmd = "belowright new" }))
 vim.keymap.set("n", "<leader>tH", term_map.move({ open_cmd = "botright new" }))
 vim.keymap.set("n", "<leader>tf", term_map.move({ open_cmd = "float" }))
+
+-- windows
+local function cmd(command)
+	return table.concat({ "<Cmd>", command, "<CR>" })
+end
+
+vim.keymap.set("n", "<C-w>z", cmd("WindowsMaximize"))
+vim.keymap.set("n", "<C-w>_", cmd("WindowsMaximizeVertically"))
+vim.keymap.set("n", "<C-w>|", cmd("WindowsMaximizeHorizontally"))
+vim.keymap.set("n", "<C-w>=", cmd("WindowsEqualize"))
