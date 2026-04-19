@@ -52,20 +52,8 @@ return {
 
 	-- treesitter
 	{
-		"nvim-treesitter/nvim-treesitter",
-		branch = "master",
-		event = { "BufReadPost", "BufNewFile" },
-		cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
-		build = ":TSUpdate",
-		opts = function()
-			return require("configs.treesitter.config")
-		end,
-		config = function(_, opts)
-			require("nvim-treesitter.configs").setup(opts)
-		end,
-	},
-	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
+		branch = "main",
 		event = { "BufReadPost", "BufNewFile" },
 		cmd = { "TSInstall", "TSBufEnable", "TSBufDisable", "TSModuleInfo" },
 	},
@@ -110,11 +98,29 @@ return {
 	-- other
 	{
 		"nvim-telescope/telescope.nvim",
-		dependencies = { "nvim-treesitter/nvim-treesitter" },
 		cmd = "Telescope",
 		opts = function()
 			return require("configs.telescope")
 		end,
+	},
+
+	{
+		"nvim-telescope/telescope-ui-select.nvim",
+		config = function()
+			require("telescope").setup({
+				extensions = {
+					["ui-select"] = {
+						require("telescope.themes").get_dropdown({
+							-- even more opts
+						}),
+					},
+				},
+			})
+			-- To get ui-select loaded and working with telescope, you need to call
+			-- load_extension, somewhere after setup function:
+			require("telescope").load_extension("ui-select")
+		end,
+		lazy = false,
 	},
 
 	{
@@ -172,5 +178,16 @@ return {
 	{
 		"anuvyklack/windows.nvim",
 		dependencies = { "anuvyklack/middleclass", "anuvyklack/animation.nvim" },
+	},
+	{
+		"sphamba/smear-cursor.nvim",
+		opts = {
+			enabled = true,
+			smear_between_buffers = true,
+			stiffness = 0.9,
+			trailing_stiffness = 0.8,
+			distance_stop_animating = 0.3,
+		},
+		lazy = false,
 	},
 }

@@ -33,5 +33,8 @@ return {
 
 		-- sh
 		"shfmt",
+
+		-- nix
+		"nil",
 	},
 }

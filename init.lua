@@ -13,6 +13,7 @@ require("configs.spectre")
 require("configs.image")
 require("configs.lualine")
 require("configs.windows")
+require("configs.ts-textobjects")
 
 -- apply colorscheme
 require("configs.gruvbox")

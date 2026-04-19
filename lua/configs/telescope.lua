@@ -15,6 +15,10 @@ return {
 		mappings = {
 			n = { ["q"] = require("telescope.actions").close },
 		},
+		cache_pickers = {
+			num_pickers = 5,
+			ignore_empty_prompt = true,
+		},
 	},
 
 	extensions_list = { "themes", "terms" },

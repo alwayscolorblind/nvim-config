@@ -28,10 +28,11 @@ end)
 
 map("n", "<leader>/", "gcc", { desc = "toggle comment", remap = true })
 map("v", "<leader>/", "gc", { desc = "toggle comment", remap = true })
+map("n", "<leader>n", function()
+	vim.fn.search("[([{<]\\s*[])}>]", "W")
+end, { desc = "goto first empty pair ([{<" })
 
--- nvimtree
-map("n", "<C-n>", "<cmd>NvimTreeToggle<CR>", { desc = "nvimtree toggle window" })
-map("n", "<leader>e", "<cmd>NvimTreeFocus<CR>", { desc = "nvimtree focus window" })
+map("i", "jj", "<ESC>")
 
 -- conform
 map({ "n", "x" }, "<leader>fm", function()
@@ -82,6 +83,7 @@ end
 map("n", "<leader>ff", create_better_find_files({ title = "Find files" }))
 map("n", "<leader>fa", create_better_find_files({ title = "Funder", no_ignore = true }))
 map("n", "<leader>fq", "<cmd> Telescope resume <CR>")
+map("n", "<leader>fd", "<cmd>Telescope diagnostics<CR>", { desc = "telescope diagnostics" })
 map("n", "<leader>fw", "<cmd>Telescope live_grep<CR>", { desc = "telescope live grep" })
 map("n", "<leader>fb", "<cmd>Telescope buffers<CR>", { desc = "telescope find buffers" })
 map("n", "<leader>fh", "<cmd>Telescope help_tags<CR>", { desc = "telescope help page" })
