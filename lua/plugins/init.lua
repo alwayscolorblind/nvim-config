@@ -52,6 +52,17 @@ return {
 
 	-- treesitter
 	{
+		"romus204/tree-sitter-manager.nvim",
+		cmd = { "TSManager" },
+		event = { "BufReadPost", "BufNewFile" },
+		dependencies = {}, -- tree-sitter CLI must be installed system-wide
+		config = function()
+			local config = require("configs.ts-manager")
+
+			require("tree-sitter-manager").setup(config)
+		end,
+	},
+	{
 		"nvim-treesitter/nvim-treesitter-textobjects",
 		branch = "main",
 		event = { "BufReadPost", "BufNewFile" },
@@ -140,7 +151,7 @@ return {
 	},
 	{
 		"mrcjkb/rustaceanvim",
-		version = "^4",
+		branch = "main",
 		ft = { "rust" },
 	},
 	{

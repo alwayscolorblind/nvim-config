@@ -1,0 +1,21 @@
+return {
+	ensure_installed = {
+		"lua",
+		"luadoc",
+		"printf",
+		"vim",
+		"vimdoc",
+		"rust",
+		"yaml",
+		"sql",
+		"javascript",
+		"typescript",
+		"css",
+		"html",
+		"dockerfile",
+		"toml",
+		"bash",
+		"nginx",
+		"nix",
+	},
+}
