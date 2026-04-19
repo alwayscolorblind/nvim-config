@@ -1,5 +1,5 @@
-### Neovim config based on NvChad
-NeoVim config based on NvChad for JavaScript/TypeScript and Rust development.
+### Neovim config
+NeoVim config for JavaScript/TypeScript and Rust and C and nix development.
 ## Installation
 - Download neovim using package manager
 - Clone repo
